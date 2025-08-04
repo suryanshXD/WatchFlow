@@ -12,9 +12,25 @@ app.post("/api/v1/website", async (req, res) => {
         url,
       },
     });
-    res.json({
-      id: data.id,
-    });
+    const response = await fetch(url);
+    const startTime = Date.now();
+    try {
+      const status: "GOOD" | "BAD" = response.status === 200 ? "GOOD" : "BAD";
+      const endTime = Date.now();
+      const latency = endTime - startTime;
+      const tickData = await prisma.websiteTick.create({
+        data: {
+          websiteId: data.id,
+          status: status,
+          latency: latency,
+        },
+      });
+      res.json({
+        mssg: tickData.status,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   } catch (error) {
     console.log(error);
   }

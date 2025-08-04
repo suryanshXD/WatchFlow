@@ -29,7 +29,7 @@ model Website {
 
 model WebsiteTick {
   id        String        @id @default(uuid())
-  createdAt DateTime
+  createdAt DateTime      @default(now())
   status    WebsiteStatus
   latency   Float
   websiteId String
