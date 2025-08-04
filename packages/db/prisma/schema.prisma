@@ -13,3 +13,28 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id    String @id @default(uuid())
+  email String
+}
+
+model Website {
+  id           String         @id @default(uuid())
+  website      String
+  userId       String
+  websiteTicks WebsiteTicks[]
+}
+
+model WebsiteTicks {
+  id          String   @id @default(uuid())
+  createdTime DateTime
+  status      Status
+  websiteId   String
+  websites    Website  @relation(fields: [websiteId], references: [id])
+}
+
+enum Status {
+  GOOD
+  BAD
+}
