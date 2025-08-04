@@ -1,12 +1,29 @@
+import { prisma } from "db/client";
 import express from "express";
 
 const app = express();
 app.use(express.json());
 
-app.post("/website", async (req, res) => {
-  const { website } = req.body;
+app.post("/api/v1/website", async (req, res) => {
+  const { url } = req.body;
+  try {
+    const data = await prisma.website.create({
+      data: {
+        url,
+      },
+    });
+    res.json({
+      id: data.id,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.get("api/v1/website", async (req, res) => {
+  const url = req.body;
+  const response = await fetch(url);
   const startTime = Date.now();
-  const response = await fetch(website);
   try {
     const output = response.status === 200 ? "Good" : "Bad";
     const endTime = Date.now();
