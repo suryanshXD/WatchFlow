@@ -20,11 +20,12 @@ model User {
 }
 
 model Website {
-  id     String        @id @default(uuid())
-  url    String
-  userId String?
-  user   User?         @relation(fields: [userId], references: [id])
-  ticks  WebsiteTick[]
+  id       String        @id @default(uuid())
+  url      String
+  userId   String?
+  user     User?         @relation(fields: [userId], references: [id])
+  ticks    WebsiteTick[]
+  disabled Boolean       @default(false)
 }
 
 model WebsiteTick {

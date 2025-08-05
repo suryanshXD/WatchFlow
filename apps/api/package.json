@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "db": "*",
     "express": "^5.1.0",
-    "db": "*"
+    "jsonwebtoken": "^9.0.2"
   }
 }
