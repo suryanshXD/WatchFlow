@@ -103,7 +103,8 @@ const checkWebsitesStatus = () => {
         } catch (error) {
           console.log(`Error checking ${website.url}:`, error);
         }
-        const latency = Date.now() - startTime;
+        const endTime = Date.now();
+        const latency = endTime - startTime;
 
         await prisma.websiteTick.create({
           data: {
@@ -116,7 +117,7 @@ const checkWebsitesStatus = () => {
         console.log(`Checked ${website.url}: ${status} (${latency}ms)`);
       }
     },
-    3 * 60 * 1000
+    1 * 60 * 1000
   );
 };
 
