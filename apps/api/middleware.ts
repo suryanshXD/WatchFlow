@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-
-const JWT_VERIFY = "Hii";
+import { JWT_PUBLIC_KEY } from "./util";
 
 export function authMiddleware(
   req: Request,
@@ -9,16 +8,16 @@ export function authMiddleware(
   next: NextFunction
 ) {
   const token = req.headers["authorization"];
-
   if (!token) {
-    return res.status(401).json({ eror: "Unathorized" });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const decoded = jwt.verify(token, JWT_VERIFY);
-  console.log(decoded);
-  if (!decoded) {
-    return res.status(401).json({ error: "Unathorized" });
+  const decoded = jwt.verify(token, JWT_PUBLIC_KEY);
+  if (!decoded || !decoded.sub) {
+    return res.status(401).json({ error: "Unauthorized" });
   }
+
   req.userId = decoded.sub as string;
+
   next();
 }

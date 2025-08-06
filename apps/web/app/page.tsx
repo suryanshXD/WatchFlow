@@ -1,103 +1,263 @@
-import Image from "next/image";
+"use client";
+import React, { useEffect, useState } from "react";
+import {
+  Activity,
+  Bell,
+  Clock,
+  Server,
+  ArrowRight,
+  Check,
+  Moon,
+  Sun,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
+function App() {
+  const router = useRouter();
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 dark:text-white transition-colors duration-200">
+      {/* Hero Section */}
+      <section className="container mx-auto px-6 py-16 md:py-24">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+              Monitor Your Services with Confidence
+            </h1>
+            <p className="mt-6 text-xl text-gray-600 dark:text-gray-300">
+              Get instant alerts when your services go down. Monitor uptime,
+              performance, and ensure your business never misses a beat.
+            </p>
+            <div className="mt-8 flex space-x-4">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition flex items-center"
+              >
+                Start Monitoring
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </button>
+              <button className="px-6 py-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:border-gray-400 dark:hover:border-gray-500 transition dark:text-white">
+                View Demo
+              </button>
+            </div>
+          </div>
+          <div className="relative">
+            <img
+              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
+              alt="Dashboard"
+              className="rounded-lg shadow-2xl"
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="bg-gray-50 dark:bg-gray-800/50 py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-16">
+            Everything you need for reliable monitoring
+          </h2>
+          <div className="grid md:grid-cols-3 gap-12">
+            <FeatureCard
+              icon={
+                <Bell className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+              }
+              title="Instant Alerts"
+              description="Get notified immediately when your services experience downtime through multiple channels."
+            />
+            <FeatureCard
+              icon={
+                <Clock className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+              }
+              title="24/7 Monitoring"
+              description="Round-the-clock monitoring from multiple locations worldwide."
+            />
+            <FeatureCard
+              icon={
+                <Server className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+              }
+              title="Detailed Reports"
+              description="Comprehensive reports and analytics to track your service performance."
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="py-20">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-16">
+            Simple, transparent pricing
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <PricingCard
+              title="Starter"
+              price="29"
+              features={[
+                "10 monitors",
+                "1-minute checks",
+                "Email notifications",
+                "5 team members",
+                "24h data retention",
+              ]}
+            />
+            <PricingCard
+              title="Professional"
+              price="79"
+              featured={true}
+              features={[
+                "50 monitors",
+                "30-second checks",
+                "All notification channels",
+                "Unlimited team members",
+                "30-day data retention",
+                "API access",
+              ]}
+            />
+            <PricingCard
+              title="Enterprise"
+              price="199"
+              features={[
+                "Unlimited monitors",
+                "15-second checks",
+                "Priority support",
+                "Custom solutions",
+                "90-day data retention",
+                "SLA guarantee",
+              ]}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <div className="flex items-center space-x-2">
+                <Activity className="h-6 w-6 text-indigo-400" />
+                <span className="text-xl font-bold">UptimeGuard</span>
+              </div>
+              <p className="mt-4 text-gray-400">
+                Keeping your services online, always.
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Product</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <a href="#" className="hover:text-white">
+                    Features
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    Pricing
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    API
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <a href="#" className="hover:text-white">
+                    About
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    Blog
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    Careers
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li>
+                  <a href="#" className="hover:text-white">
+                    Privacy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    Terms
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:text-white">
+                    Security
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
+            <p>&copy; 2025 UptimeGuard. All rights reserved.</p>
+          </div>
+        </div>
       </footer>
     </div>
   );
 }
+
+function FeatureCard({ icon, title, description }) {
+  return (
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+      <div className="mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+        {title}
+      </h3>
+      <p className="text-gray-600 dark:text-gray-300">{description}</p>
+    </div>
+  );
+}
+
+function PricingCard({ title, price, features, featured = false }) {
+  return (
+    <div
+      className={`p-8 rounded-lg ${
+        featured
+          ? "bg-indigo-600 text-white ring-4 ring-indigo-300 dark:ring-indigo-500"
+          : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+      }`}
+    >
+      <h3 className="text-xl font-semibold mb-4">{title}</h3>
+      <div className="mb-6">
+        <span className="text-4xl font-bold">${price}</span>
+        <span className="text-sm">/month</span>
+      </div>
+      <ul className="space-y-3 mb-8">
+        {features.map((feature, index) => (
+          <li key={index} className="flex items-center space-x-2">
+            <Check className="h-5 w-5" />
+            <span>{feature}</span>
+          </li>
+        ))}
+      </ul>
+      <button
+        className={`w-full py-3 rounded-lg transition ${
+          featured
+            ? "bg-white text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-200"
+            : "bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
+        }`}
+      >
+        Get Started
+      </button>
+    </div>
+  );
+}
+
+export default App;
