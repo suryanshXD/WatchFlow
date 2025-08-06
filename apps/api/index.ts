@@ -42,25 +42,6 @@ app.post("/api/v1/website", authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/api/v1/webiste/status", authMiddleware, async (req, res) => {
-  const userId = req.userId;
-  const websiteId = req.query.websiteId! as unknown as string;
-  if (!websiteId) {
-    return res.status(401).json({ error: "websiteId missing" });
-  }
-  const data = await prisma.website.findFirst({
-    where: {
-      id: websiteId,
-      userId,
-      disabled: false,
-    },
-    include: {
-      ticks: true,
-    },
-  });
-  res.json(data);
-});
-
 app.get("/api/v1/websites", authMiddleware, async (req, res) => {
   const userId = req.userId!;
 
