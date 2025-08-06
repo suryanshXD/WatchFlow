@@ -1,9 +1,12 @@
 "use client";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ChevronDown, ChevronUp, Globe, Plus, Moon, Sun } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { useWebsites } from "@/hooks/UseWebsite";
+import { Resend } from "resend";
+import { useUser } from "@clerk/nextjs";
+import { EmailTemplate } from "../components/Email-Template";
 
 const API_BACKEND_URL = "http://localhost:8080";
 
@@ -96,6 +99,16 @@ interface ProcessedWebsite {
 
 function WebsiteCard({ website }: { website: ProcessedWebsite }) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { user } = useUser();
+  const email = user?.emailAddresses[0]?.emailAddress as string;
+
+  const status = website.status;
+  if (status === "BAD") {
+    async function sendMail() {
+      await axios.post("/api/send.ts", { email });
+    }
+    sendMail();
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
