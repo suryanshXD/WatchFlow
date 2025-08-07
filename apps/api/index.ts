@@ -4,7 +4,12 @@ import { authMiddleware } from "./middleware";
 import cors from "cors";
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000", // your frontend
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.post("/api/v1/website", authMiddleware, async (req, res) => {

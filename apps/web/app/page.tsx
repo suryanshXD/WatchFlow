@@ -11,7 +11,6 @@ import {
   Sun,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 function App() {
   const router = useRouter();
 

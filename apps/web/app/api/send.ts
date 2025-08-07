@@ -11,11 +11,10 @@ export default async function handler(
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  const email = req.body;
 
   const { data, error } = await resend.emails.send({
     from: "Acme <onboarding@resend.dev>",
-    to: [email],
+    to: ["suryanshvaish6@gmail.com"],
     subject: "Your site is down",
     react: EmailTemplate({ firstName: "John" }),
   });

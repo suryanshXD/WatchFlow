@@ -99,16 +99,6 @@ interface ProcessedWebsite {
 
 function WebsiteCard({ website }: { website: ProcessedWebsite }) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { user } = useUser();
-  const email = user?.emailAddresses[0]?.emailAddress as string;
-
-  const status = website.status;
-  if (status === "BAD") {
-    async function sendMail() {
-      await axios.post("/api/send.ts", { email });
-    }
-    sendMail();
-  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -224,6 +214,10 @@ function App() {
     });
   }, [websites]);
 
+  const getStatus = processedWebsites.map((site) => site.status);
+  console.log(getStatus);
+  //add a backend route for speific website route and get status from there and also pool it
+
   // Toggle dark mode
   React.useEffect(() => {
     if (isDarkMode) {
@@ -232,6 +226,17 @@ function App() {
       document.documentElement.classList.remove("dark");
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    async () => {
+      const { user } = useUser();
+      const email = user?.emailAddresses[0]?.emailAddress as string;
+
+      if (getStatus === ("BAD" as any)) {
+        await axios.post("/api/send");
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
