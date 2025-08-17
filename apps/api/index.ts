@@ -96,21 +96,38 @@ const checkWebsitesStatus = () => {
           const response = await fetch(website.url);
           if (response.status === 200) {
             status = "GOOD";
-          } else {
-            const transporter = nodemailer.createTransport({
-              service: "gmail",
-              auth: {
-                user: "watchflow2@gmail.com",
-                pass: "xyhzayjoqkhhtioy", // replace with Gmail App Password
-              },
-            });
+          }
+        } catch (error) {
+          console.log(`Error checking ${website.url}:`, error);
+        }
+        const endTime = Date.now();
+        const latency = endTime - startTime;
 
-            (async () => {
-              const info = await transporter.sendMail({
-                from: '"Watch Flow" <watchflow2@gmail.com>',
-                to: "suryanshvaish6@gmail.com",
-                subject: "🚨 Website Down Alert - Watch Flow",
-                html: `
+        const lastTick = await prisma.websiteTick.findFirst({
+          where: { websiteId: website.id },
+          orderBy: { createdAt: "desc" },
+        });
+
+        console.log(lastTick);
+
+        if (
+          (lastTick?.status !== "BAD" && status === "BAD") ||
+          (!lastTick?.status && status === "BAD")
+        ) {
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "watchflow2@gmail.com",
+              pass: "xyhzayjoqkhhtioy", // replace with Gmail App Password
+            },
+          });
+
+          (async () => {
+            const info = await transporter.sendMail({
+              from: '"Watch Flow" <watchflow2@gmail.com>',
+              to: "suryanshvaish6@gmail.com",
+              subject: "🚨 Website Down Alert - Watch Flow",
+              html: `
       <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
         <table width="100%" style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
           <tr style="background-color: #ff4d4f; color: white; text-align: center;">
@@ -143,16 +160,12 @@ const checkWebsitesStatus = () => {
         </table>
       </div>
     `,
-              });
+            });
 
-              console.log("Message sent:", info.messageId);
-            })();
-          }
-        } catch (error) {
-          console.log(`Error checking ${website.url}:`, error);
+            console.log("Message sent:", info.messageId);
+          })();
+          console.log("Bad send email to user done");
         }
-        const endTime = Date.now();
-        const latency = endTime - startTime;
 
         await prisma.websiteTick.create({
           data: {
