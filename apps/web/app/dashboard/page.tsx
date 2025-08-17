@@ -2,11 +2,8 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { ChevronDown, ChevronUp, Globe, Plus, Moon, Sun } from "lucide-react";
 import axios from "axios";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useWebsites } from "@/hooks/UseWebsite";
-import { Resend } from "resend";
-import { useUser } from "@clerk/nextjs";
-import { EmailTemplate } from "../components/Email-Template";
 
 const API_BACKEND_URL = "http://localhost:8080";
 
@@ -15,7 +12,13 @@ type UptimeStatus = "GOOD" | "BAD" | "UNKNOWN";
 function StatusCircle({ status }: { status: UptimeStatus }) {
   return (
     <div
-      className={`w-3 h-3 rounded-full ${status === "GOOD" ? "bg-green-500" : status === "BAD" ? "bg-red-500" : "bg-gray-500"}`}
+      className={`w-3 h-3 rounded-full ${
+        status === "GOOD"
+          ? "bg-green-500"
+          : status === "BAD"
+            ? "bg-red-500"
+            : "bg-gray-500"
+      }`}
     />
   );
 }
@@ -42,9 +45,11 @@ function UptimeTicks({ ticks }: { ticks: UptimeStatus[] }) {
 function CreateWebsiteModal({
   isOpen,
   onClose,
+  isLimitReached,
 }: {
   isOpen: boolean;
   onClose: (url: string | null) => void;
+  isLimitReached: boolean;
 }) {
   const [url, setUrl] = useState("");
   if (!isOpen) return null;
@@ -55,18 +60,26 @@ function CreateWebsiteModal({
         <h2 className="text-xl font-semibold mb-4 dark:text-white">
           Add New Website
         </h2>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            URL
-          </label>
-          <input
-            type="url"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
-            placeholder="https://example.com"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </div>
+
+        {isLimitReached ? (
+          <p className="text-red-500 font-medium mb-4">
+            ❌ You can only add up to 2 websites.
+          </p>
+        ) : (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              URL
+            </label>
+            <input
+              type="url"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-white"
+              placeholder="https://example.com"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+            />
+          </div>
+        )}
+
         <div className="flex justify-end space-x-3 mt-6">
           <button
             type="button"
@@ -75,13 +88,15 @@ function CreateWebsiteModal({
           >
             Cancel
           </button>
-          <button
-            type="submit"
-            onClick={() => onClose(url)}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
-          >
-            Add Website
-          </button>
+          {!isLimitReached && (
+            <button
+              type="submit"
+              onClick={() => onClose(url)}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+            >
+              Add Website
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -151,21 +166,17 @@ function App() {
 
   const processedWebsites = useMemo(() => {
     return websites.map((website) => {
-      // Sort ticks by creation time
       const sortedTicks = [...website.ticks].sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
-      // Get the most recent 30 minutes of ticks
       const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
       const recentTicks = sortedTicks.filter(
         (tick) => new Date(tick.createdAt) > thirtyMinutesAgo
       );
 
-      // Aggregate ticks into 3-minute windows (10 windows total)
       const windows: UptimeStatus[] = [];
-
       for (let i = 0; i < 10; i++) {
         const windowStart = new Date(Date.now() - (i + 1) * 3 * 60 * 1000);
         const windowEnd = new Date(Date.now() - i * 3 * 60 * 1000);
@@ -175,7 +186,6 @@ function App() {
           return tickTime >= windowStart && tickTime < windowEnd;
         });
 
-        // Window is considered up if majority of ticks are up
         const upTicks = windowTicks.filter(
           (tick) => tick.status === "GOOD"
         ).length;
@@ -187,7 +197,6 @@ function App() {
               : "BAD";
       }
 
-      // Calculate overall status and uptime percentage
       const totalTicks = sortedTicks.length;
       const upTicks = sortedTicks.filter(
         (tick) => tick.status === "GOOD"
@@ -195,10 +204,7 @@ function App() {
       const uptimePercentage =
         totalTicks === 0 ? 100 : (upTicks / totalTicks) * 100;
 
-      // Get the most recent status
       const currentStatus = windows[windows.length - 1];
-
-      // Format the last checked time
       const lastChecked = sortedTicks[0]
         ? new Date(sortedTicks[0].createdAt).toLocaleTimeString()
         : "Never";
@@ -214,29 +220,16 @@ function App() {
     });
   }, [websites]);
 
-  const getStatus = processedWebsites.map((site) => site.status);
-  console.log(getStatus);
-  //add a backend route for speific website route and get status from there and also pool it
+  const isLimitReached = processedWebsites.length >= 2;
 
-  // Toggle dark mode
-  React.useEffect(() => {
+  // Dark mode toggle
+  useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
   }, [isDarkMode]);
-
-  useEffect(() => {
-    async () => {
-      const { user } = useUser();
-      const email = user?.emailAddresses[0]?.emailAddress as string;
-
-      if (getStatus === ("BAD" as any)) {
-        await axios.post("/api/send");
-      }
-    };
-  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
@@ -261,10 +254,15 @@ function App() {
             </button>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+              disabled={isLimitReached}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors duration-200 ${
+                isLimitReached
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700"
+              }`}
             >
               <Plus className="w-4 h-4" />
-              <span>Add Website</span>
+              <span>{isLimitReached ? "Limit Reached" : "Add Website"}</span>
             </button>
           </div>
         </div>
@@ -278,31 +276,22 @@ function App() {
 
       <CreateWebsiteModal
         isOpen={isModalOpen}
+        isLimitReached={isLimitReached}
         onClose={async (url) => {
-          if (url === null) {
-            setIsModalOpen(false);
-            return;
-          }
+          setIsModalOpen(false);
+          if (!url || isLimitReached) return;
 
           const token = await getToken();
-          console.log(token);
-
-          setIsModalOpen(false);
-          axios
-            .post(
-              `${API_BACKEND_URL}/api/v1/website`,
-              {
-                url,
+          await axios.post(
+            `${API_BACKEND_URL}/api/v1/website`,
+            { url },
+            {
+              headers: {
+                Authorization: token,
               },
-              {
-                headers: {
-                  Authorization: token,
-                },
-              }
-            )
-            .then(() => {
-              refreshWebsites();
-            });
+            }
+          );
+          refreshWebsites();
         }}
       />
     </div>

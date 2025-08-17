@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,22 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.28.1",
-    "@react-three/drei": "^10.7.2",
-    "@react-three/fiber": "^9.0.0-alpha.8",
-    "@types/axios": "^0.14.4",
-    "axios": "^1.11.0",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.23.12",
-    "lucide-react": "^0.536.0",
-    "next": "15.4.5",
+    "lucide-react": "^0.539.0",
+    "next": "15.4.6",
+    "next-auth": "^5.0.0-beta.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "resend": "^4.8.0",
-    "tailwind-merge": "^3.3.1",
-    "three": "^0.179.1",
-    "three-globe": "^2.44.0"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -32,12 +27,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/three": "^0.179.0",
-    "db": "*",
     "eslint": "^9",
-    "eslint-config-next": "15.4.5",
+    "eslint-config-next": "15.4.6",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.6",
-    "typescript": "^5"
+    "typescript": "^5",
+    "db": "*"
   }
 }

@@ -27,6 +27,7 @@ export function useWebsites() {
         Authorization: token,
       },
     });
+    console.log(response.data.websites);
 
     setWebsites(response.data.websites);
   }
