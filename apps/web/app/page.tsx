@@ -589,7 +589,7 @@ function App() {
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
-            <p>&copy; 2025 UptimeGuard. All rights reserved.</p>
+            <p>&copy; 2025 WatchFlow. All rights reserved.</p>
           </div>
         </div>
       </footer>

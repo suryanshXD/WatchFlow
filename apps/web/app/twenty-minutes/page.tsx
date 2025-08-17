@@ -197,12 +197,16 @@ function App() {
               : "BAD";
       }
 
-      const totalTicks = sortedTicks.length;
-      const upTicks = sortedTicks.filter(
+      const validTicks = sortedTicks.filter(
+        (tick) => tick.status === "GOOD" || tick.status === "BAD"
+      );
+      const totalValidTicks = validTicks.length;
+      const upTicks = validTicks.filter(
         (tick) => tick.status === "GOOD"
       ).length;
+
       const uptimePercentage =
-        totalTicks === 0 ? 100 : (upTicks / totalTicks) * 100;
+        totalValidTicks === 0 ? 0 : (upTicks / totalValidTicks) * 100;
 
       const currentStatus = windows[windows.length - 1];
       const lastChecked = sortedTicks[0]

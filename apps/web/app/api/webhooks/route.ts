@@ -8,11 +8,18 @@ export async function POST(req: NextRequest) {
 
     // Do something with payload
     // For this guide, log payload to console
-    const { id, email_addresses, first_name, image_url } = evt.data;
+    const { id, email_addresses, first_name, image_url }: any = evt.data;
     try {
-      const newUser = await prisma.user.create({
-        data: {
-          clerkUserId: id as string,
+      const newUser = await prisma.user.upsert({
+        where: { clerkUserId: id },
+        update: {
+          // optional: update fields if Clerk sends new data
+          email: email_addresses[0].email_address,
+          name: first_name,
+          imageUrl: image_url,
+        },
+        create: {
+          clerkUserId: id,
           email: email_addresses[0].email_address,
           name: first_name,
           imageUrl: image_url,

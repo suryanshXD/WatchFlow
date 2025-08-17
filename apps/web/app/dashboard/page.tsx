@@ -197,12 +197,16 @@ function App() {
               : "BAD";
       }
 
-      const totalTicks = sortedTicks.length;
-      const upTicks = sortedTicks.filter(
+      const validTicks = sortedTicks.filter(
+        (tick) => tick.status === "GOOD" || tick.status === "BAD"
+      );
+      const totalValidTicks = validTicks.length;
+      const upTicks = validTicks.filter(
         (tick) => tick.status === "GOOD"
       ).length;
+
       const uptimePercentage =
-        totalTicks === 0 ? 100 : (upTicks / totalTicks) * 100;
+        totalValidTicks === 0 ? 0 : (upTicks / totalValidTicks) * 100;
 
       const currentStatus = windows[windows.length - 1];
       const lastChecked = sortedTicks[0]
@@ -232,7 +236,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <div className="max-w-4xl mx-auto py-8 px-4">
+      <div className="max-w-4xl mx-auto py-8 px-4 pt-24">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
             <Globe className="w-8 h-8 text-blue-600" />

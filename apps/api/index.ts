@@ -106,7 +106,16 @@ const checkWebsitesStatus = (intervalLabel: string, ms: number) => {
         orderBy: { createdAt: "desc" },
       });
 
-      console.log(lastTick);
+      const userEmail = await prisma.user.findFirst({
+        where: {
+          clerkUserId: website.userId,
+        },
+        select: {
+          email: true,
+        },
+      });
+
+      console.log(userEmail);
 
       if (
         (lastTick?.status !== "BAD" && status === "BAD") ||
@@ -123,7 +132,7 @@ const checkWebsitesStatus = (intervalLabel: string, ms: number) => {
         (async () => {
           const info = await transporter.sendMail({
             from: '"Watch Flow" <watchflow2@gmail.com>',
-            to: "suryanshvaish6@gmail.com",
+            to: userEmail?.email,
             subject: "🚨 Website Down Alert - Watch Flow",
             html: `
       <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
