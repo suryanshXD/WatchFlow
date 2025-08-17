@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:3000", // your frontend
+    origin: "http://localhost:3000",
     credentials: true,
   })
 );
@@ -15,55 +15,54 @@ app.use(express.json());
 
 app.post("/api/v1/website", authMiddleware, async (req, res) => {
   const userId = req.userId!;
-  const { url } = req.body;
+  const { url, interval } = req.body;
 
-  console.log(userId);
+  if (!url || !interval) {
+    return res.status(400).json({ error: "url and interval are required" });
+  }
+
+  if (!["3min", "10min", "20min"].includes(interval)) {
+    return res.status(400).json({ error: "interval must be 3, 10, or 20" });
+  }
 
   try {
     const data = await prisma.website.create({
       data: {
         userId,
         url,
+        checkInterval: interval,
       },
     });
-    const response = await fetch(url);
-    const startTime = Date.now();
-    try {
-      const status: "GOOD" | "BAD" = response.status === 200 ? "GOOD" : "BAD";
-      const endTime = Date.now();
-      const latency = endTime - startTime;
-      await prisma.websiteTick.create({
-        data: {
-          websiteId: data.id,
-          status: status,
-          latency,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    res.status(201).json(data.id);
+
+    res.status(201).json(data);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
 app.get("/api/v1/websites", authMiddleware, async (req, res) => {
   const userId = req.userId!;
+  const interval = req.query.interval as string;
+
+  if (!["3min", "10min", "20min"].includes(interval)) {
+    return res.status(400).json({
+      error: "interval query param (3min, 10min, or 20min) is required",
+    });
+  }
 
   const websites = await prisma.website.findMany({
     where: {
       userId,
       disabled: false,
+      checkInterval: interval,
     },
     include: {
       ticks: true,
     },
   });
 
-  res.json({
-    websites,
-  });
+  res.json({ websites });
 });
 
 app.delete("/api/v1/website/", authMiddleware, async (req, res) => {
@@ -81,53 +80,52 @@ app.delete("/api/v1/website/", authMiddleware, async (req, res) => {
   });
 });
 
-const checkWebsitesStatus = () => {
-  setInterval(
-    async () => {
-      const websites = await prisma.website.findMany({
-        where: { disabled: false },
+const checkWebsitesStatus = (intervalLabel: string, ms: number) => {
+  setInterval(async () => {
+    const websites = await prisma.website.findMany({
+      where: { disabled: false, checkInterval: intervalLabel },
+    });
+
+    for (const website of websites) {
+      const startTime = Date.now();
+      let status: "GOOD" | "BAD" = "BAD";
+
+      try {
+        const response = await fetch(website.url);
+        if (response.status === 200) {
+          status = "GOOD";
+        }
+      } catch (error) {
+        console.log(`Error checking ${website.url}:`, error);
+      }
+      const endTime = Date.now();
+      const latency = endTime - startTime;
+
+      const lastTick = await prisma.websiteTick.findFirst({
+        where: { websiteId: website.id },
+        orderBy: { createdAt: "desc" },
       });
 
-      for (const website of websites) {
-        const startTime = Date.now();
-        let status: "GOOD" | "BAD" = "BAD";
+      console.log(lastTick);
 
-        try {
-          const response = await fetch(website.url);
-          if (response.status === 200) {
-            status = "GOOD";
-          }
-        } catch (error) {
-          console.log(`Error checking ${website.url}:`, error);
-        }
-        const endTime = Date.now();
-        const latency = endTime - startTime;
-
-        const lastTick = await prisma.websiteTick.findFirst({
-          where: { websiteId: website.id },
-          orderBy: { createdAt: "desc" },
+      if (
+        (lastTick?.status !== "BAD" && status === "BAD") ||
+        (!lastTick?.status && status === "BAD")
+      ) {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "watchflow2@gmail.com",
+            pass: "xyhzayjoqkhhtioy", // replace with Gmail App Password
+          },
         });
 
-        console.log(lastTick);
-
-        if (
-          (lastTick?.status !== "BAD" && status === "BAD") ||
-          (!lastTick?.status && status === "BAD")
-        ) {
-          const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-              user: "watchflow2@gmail.com",
-              pass: "xyhzayjoqkhhtioy", // replace with Gmail App Password
-            },
-          });
-
-          (async () => {
-            const info = await transporter.sendMail({
-              from: '"Watch Flow" <watchflow2@gmail.com>',
-              to: "suryanshvaish6@gmail.com",
-              subject: "🚨 Website Down Alert - Watch Flow",
-              html: `
+        (async () => {
+          const info = await transporter.sendMail({
+            from: '"Watch Flow" <watchflow2@gmail.com>',
+            to: "suryanshvaish6@gmail.com",
+            subject: "🚨 Website Down Alert - Watch Flow",
+            html: `
       <div style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
         <table width="100%" style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
           <tr style="background-color: #ff4d4f; color: white; text-align: center;">
@@ -160,28 +158,29 @@ const checkWebsitesStatus = () => {
         </table>
       </div>
     `,
-            });
+          });
 
-            console.log("Message sent:", info.messageId);
-          })();
-          console.log("Bad send email to user done");
-        }
-
-        await prisma.websiteTick.create({
-          data: {
-            websiteId: website.id,
-            status,
-            latency,
-          },
-        });
-
-        console.log(`Checked ${website.url}: ${status} (${latency}ms)`);
+          console.log("Message sent:", info.messageId);
+        })();
+        console.log("Bad send email to user done");
       }
-    },
-    1 * 60 * 1000
-  );
+
+      await prisma.websiteTick.create({
+        data: {
+          websiteId: website.id,
+          status,
+          latency,
+          checkInterval: website.checkInterval,
+        },
+      });
+
+      console.log(`Checked ${website.url}: ${status} (${latency}ms)`);
+    }
+  }, ms);
 };
 
-checkWebsitesStatus();
+checkWebsitesStatus("3min", 3 * 60 * 1000);
+checkWebsitesStatus("10min", 10 * 60 * 1000);
+checkWebsitesStatus("20min", 20 * 60 * 1000);
 
 app.listen(8080, () => console.log("Running on port 8080"));

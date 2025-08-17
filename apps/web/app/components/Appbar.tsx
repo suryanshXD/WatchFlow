@@ -7,12 +7,15 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import Link from "next/link";
 
 export function Appbar() {
   return (
     <>
-      <div className="w-full flex justify-between bg-stone-800 px-20 py-3.5">
-        <div className="text-xl text-white">WatchFlow</div>
+      <div className="w-full flex justify-between px-20 py-3.5 fixed backdrop-blur-lg border-b border-gray-300 z-50">
+        <div className="text-2xl text-black font-semibold cursor-pointer">
+          <Link href={"/"}>WatchFlow</Link>
+        </div>
         <div>
           <SignedOut>
             <SignInButton>

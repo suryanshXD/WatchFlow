@@ -145,7 +145,7 @@ function WebsiteCard({ website }: { website: ProcessedWebsite }) {
         <div className="px-4 pb-4 border-t border-gray-100 dark:border-gray-700">
           <div className="mt-3">
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
-              Last 30 minutes status:
+              Last 200 minutes status:
             </p>
             <UptimeTicks ticks={website.uptimeTicks} />
           </div>
@@ -161,7 +161,7 @@ function WebsiteCard({ website }: { website: ProcessedWebsite }) {
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { websites, refreshWebsites } = useWebsites("3min");
+  const { websites, refreshWebsites } = useWebsites("20min");
   const { getToken } = useAuth();
 
   const processedWebsites = useMemo(() => {
@@ -170,16 +170,15 @@ function App() {
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-
-      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const twoHundredMinutesAgo = new Date(Date.now() - 200 * 60 * 1000);
       const recentTicks = sortedTicks.filter(
-        (tick) => new Date(tick.createdAt) > thirtyMinutesAgo
+        (tick) => new Date(tick.createdAt) > twoHundredMinutesAgo
       );
 
       const windows: UptimeStatus[] = [];
       for (let i = 0; i < 10; i++) {
-        const windowStart = new Date(Date.now() - (i + 1) * 3 * 60 * 1000);
-        const windowEnd = new Date(Date.now() - i * 3 * 60 * 1000);
+        const windowStart = new Date(Date.now() - (i + 1) * 20 * 60 * 1000);
+        const windowEnd = new Date(Date.now() - i * 20 * 60 * 1000);
 
         const windowTicks = recentTicks.filter((tick) => {
           const tickTime = new Date(tick.createdAt);
@@ -189,6 +188,7 @@ function App() {
         const upTicks = windowTicks.filter(
           (tick) => tick.status === "GOOD"
         ).length;
+
         windows[9 - i] =
           windowTicks.length === 0
             ? "UNKNOWN"
@@ -220,7 +220,7 @@ function App() {
     });
   }, [websites]);
 
-  const isLimitReached = processedWebsites.length >= 20;
+  const isLimitReached = processedWebsites.length >= 2;
 
   useEffect(() => {
     if (isDarkMode) {
@@ -237,7 +237,7 @@ function App() {
           <div className="flex items-center space-x-2">
             <Globe className="w-8 h-8 text-blue-600" />
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              WatchFlow
+              WatchFlow (20m)
             </h1>
           </div>
           <div className="flex items-center space-x-4">
@@ -283,7 +283,7 @@ function App() {
           const token = await getToken();
           await axios.post(
             `${API_BACKEND_URL}/api/v1/website`,
-            { url, interval: "3min" },
+            { url, interval: "20min" },
             {
               headers: {
                 Authorization: token,
