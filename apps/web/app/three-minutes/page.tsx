@@ -55,8 +55,13 @@ function CreateWebsiteModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-gray-100  flex items-center justify-center p-4">
+      <div
+        className="bg-white  rounded-lg p-6 w-full max-w-md border border-gray-300"
+        style={{
+          boxShadow: `rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px`,
+        }}
+      >
         <h2 className="text-xl font-semibold mb-4 dark:text-white">
           Add New Website
         </h2>
@@ -245,16 +250,6 @@ function App() {
             </h1>
           </div>
           <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              {isDarkMode ? (
-                <Sun className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              ) : (
-                <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-              )}
-            </button>
             <button
               onClick={() => setIsModalOpen(true)}
               disabled={isLimitReached}

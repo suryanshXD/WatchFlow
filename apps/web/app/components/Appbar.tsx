@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import {
   SignInButton,
   SignOutButton,
@@ -19,14 +20,10 @@ export function Appbar() {
         <div>
           <SignedOut>
             <SignInButton>
-              <button className="bg-blue-400 text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-8 px-2.5  cursor-pointer">
-                Sign In
-              </button>
+              <Button className="px-3 py-2">Sign In</Button>
             </SignInButton>
             <SignUpButton>
-              <button className="bg-blue-400 text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-8 px-2.5  cursor-pointer ml-2">
-                Sign Up
-              </button>
+              <Button className="ml-2 px-3 py-2">Sign Up</Button>
             </SignUpButton>
           </SignedOut>
           <SignedIn>

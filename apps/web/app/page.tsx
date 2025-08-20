@@ -422,13 +422,14 @@ function App() {
               performance, and ensure your business never misses a beat.
             </p>
             <div className="mt-8 flex space-x-4">
-              <button
+              <motion.button
+                whileTap={{ scale: [0.95, 1.1, 1] }}
                 onClick={handleClick}
-                className="px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition flex items-center"
+                className="px-6 py-3 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600  flex items-center"
               >
                 Start Monitoring
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </button>
+              </motion.button>
             </div>
           </div>
 
@@ -481,7 +482,7 @@ function App() {
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
             <PricingCard
-              title="Starter"
+              title="Enterprise"
               price="9"
               herf="/ten-minutes"
               features={[
@@ -491,7 +492,7 @@ function App() {
               ]}
             />
             <PricingCard
-              title="Professional"
+              title="Starter"
               price="Free"
               herf="/twenty-minutes"
               featured={true}
@@ -502,9 +503,9 @@ function App() {
               ]}
             />
             <PricingCard
-              title="Enterprise"
+              title="Professional"
               price="15"
-              herf="/dashboard"
+              herf="/three-minutes"
               features={[
                 "20  monitors",
                 "3-minute checks",
@@ -599,13 +600,17 @@ function App() {
 
 function FeatureCard({ icon, title, description }: any | string) {
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.5 }}
+      className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg"
+    >
       <div className="mb-4">{icon}</div>
       <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
         {title}
       </h3>
       <p className="text-gray-600 dark:text-gray-300">{description}</p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -639,7 +644,8 @@ function PricingCard({
         ))}
       </ul>
       <Link href={herf}>
-        <button
+        <motion.button
+          whileTap={{ scale: [0.95, 1.1, 1] }}
           className={`w-full py-3 rounded-lg transition ${
             featured
               ? "bg-white text-indigo-600 hover:bg-gray-100 dark:hover:bg-gray-200"
@@ -647,7 +653,7 @@ function PricingCard({
           }`}
         >
           Get Started
-        </button>
+        </motion.button>
       </Link>
     </div>
   );

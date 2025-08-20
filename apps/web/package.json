@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.28.1",
+    "@radix-ui/react-slot": "^1.2.3",
     "@react-three/drei": "^10.7.2",
     "@react-three/fiber": "^9.0.0-alpha.8",
     "@types/axios": "^0.14.4",
@@ -22,6 +23,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "resend": "^4.8.0",
+    "svix": "^1.73.0",
     "tailwind-merge": "^3.3.1",
     "three": "^0.179.1",
     "three-globe": "^2.44.0"

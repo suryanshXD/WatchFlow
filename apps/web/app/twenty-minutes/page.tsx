@@ -55,8 +55,13 @@ function CreateWebsiteModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+    <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center p-4">
+      <div
+        className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md border border-gray-300"
+        style={{
+          boxShadow: `rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px`,
+        }}
+      >
         <h2 className="text-xl font-semibold mb-4 dark:text-white">
           Add New Website
         </h2>
@@ -236,7 +241,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
-      <div className="max-w-4xl mx-auto py-8 px-4">
+      <div className="max-w-4xl mx-auto py-8 px-4 pt-24">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-2">
             <Globe className="w-8 h-8 text-blue-600" />
